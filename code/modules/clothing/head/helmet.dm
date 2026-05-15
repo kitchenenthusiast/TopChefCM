@@ -569,6 +569,20 @@ GLOBAL_LIST_INIT(allowed_helmet_items, list(
 		..()
 
 /obj/item/clothing/head/helmet/marine/attackby(obj/item/attacking_item, mob/user)
+
+	if (istype(attacking_item, /obj/item/clothing/accessory)) //attach accessories first
+		var/obj/item/clothing/accessory/Attachable_Accessory = attacking_item
+		if (LAZYLEN(src.accessories) >= src.worn_accessory_limit)
+			to_chat(user, SPAN_WARNING("You cannot fit anymore accessoires onto \the [src]!"))
+			return TRUE
+		if(user.drop_held_item(Attachable_Accessory))
+			Attachable_Accessory.forceMove(src)
+			LAZYINITLIST(src.accessories)
+			src.accessories += Attachable_Accessory
+			to_chat(user, SPAN_NOTICE("You attach [Attachable_Accessory] to \the [src]."))
+			update_icon()
+			return TRUE
+
 	. = ..()
 	if(.)
 		return
@@ -642,12 +656,7 @@ GLOBAL_LIST_INIT(allowed_helmet_items, list(
 		if(!length(built_in_visors))
 			cycle_action.remove_from(user)
 		return
-
-	if (istype(attacking_item, /obj/item/clothing/accessory))
-		if	(..())
-			return TRUE
-
-	return pockets.attackby(attacking_item, user)
+	return pockets.attackby(attacking_item, user) //fallback storage if our accessories are full
 
 /obj/item/clothing/head/helmet/marine/on_pocket_insertion()
 	update_icon()
@@ -663,27 +672,36 @@ GLOBAL_LIST_INIT(allowed_helmet_items, list(
 	// the human sprite is the only thing that reliably renders things, so
 	// we have to add overlays to that.
 	helmet_overlays = list() // Rebuild our list every time
-	var/list/all_gear = pockets.contents + (src.accessories || list())
+	var/list/all_gear = (src.accessories || list()) + pockets.contents
 	if(length(all_gear) && (flags_marine_helmet & HELMET_GARB_OVERLAY))
 		var/list/above_band_layer = list()
 		var/list/below_band_layer = list()
 		var/has_helmet_band = FALSE
+
 		for(var/obj/item/garb_object in all_gear)
 			if(garb_object.type in GLOB.allowed_helmet_items)
+				var/image/new_overlay = garb_object.get_garb_overlay(GLOB.allowed_helmet_items[garb_object.type])
+
+				if(istype(garb_object, /obj/item/clothing/accessory))
+					var/datum/Universal_Accessory = garb_object
+					if(hasvar(Universal_Accessory, "helmet_background_layer") && Universal_Accessory.vars["helmet_background_layer"])
+						below_band_layer += new_overlay
+					else
+						above_band_layer += new_overlay
+					continue
 				var/has_band = !HAS_FLAG(garb_object.flags_obj, OBJ_NO_HELMET_BAND)
 				if(has_band)
 					has_helmet_band = TRUE
-				var/image/new_overlay = garb_object.get_garb_overlay(GLOB.allowed_helmet_items[garb_object.type])
-				if(has_band)
 					above_band_layer += new_overlay
 				else
 					below_band_layer += new_overlay
 
 		if(has_helmet_band)
+		//note: BYOND renders lists with l -> r as background -> foreground; so we build layers upwards in our overlays list
 			var/image/band_overlay = overlay_image(helmet_band_icon, "helmet_band", color, RESET_COLOR)
-			helmet_overlays = above_band_layer + band_overlay + below_band_layer
+			helmet_overlays = below_band_layer + band_overlay + above_band_layer
 		else
-			helmet_overlays = above_band_layer + below_band_layer
+			helmet_overlays = below_band_layer + above_band_layer
 
 	if(active_visor)
 		helmet_overlays += overlay_image(active_visor.helmet_overlay_icon, active_visor.helmet_overlay, color, RESET_COLOR)
