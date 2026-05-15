@@ -641,10 +641,12 @@ GLOBAL_LIST_INIT(allowed_helmet_items, list(
 		cycle_action.set_default_overlay()
 		if(!length(built_in_visors))
 			cycle_action.remove_from(user)
-
 		return
 
-	..()
+	if (istype(attacking_item, /obj/item/clothing/accessory))
+		if	(..())
+			return TRUE
+
 	return pockets.attackby(attacking_item, user)
 
 /obj/item/clothing/head/helmet/marine/on_pocket_insertion()
@@ -661,11 +663,12 @@ GLOBAL_LIST_INIT(allowed_helmet_items, list(
 	// the human sprite is the only thing that reliably renders things, so
 	// we have to add overlays to that.
 	helmet_overlays = list() // Rebuild our list every time
-	if(length(pockets?.contents) && (flags_marine_helmet & HELMET_GARB_OVERLAY))
+	var/list/all_gear = pockets.contents + (src.accessories || list())
+	if(length(all_gear) && (flags_marine_helmet & HELMET_GARB_OVERLAY))
 		var/list/above_band_layer = list()
 		var/list/below_band_layer = list()
 		var/has_helmet_band = FALSE
-		for(var/obj/item/garb_object in pockets.contents)
+		for(var/obj/item/garb_object in all_gear)
 			if(garb_object.type in GLOB.allowed_helmet_items)
 				var/has_band = !HAS_FLAG(garb_object.flags_obj, OBJ_NO_HELMET_BAND)
 				if(has_band)

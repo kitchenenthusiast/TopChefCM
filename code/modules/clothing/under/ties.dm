@@ -1527,7 +1527,7 @@ Wrist Accessories
 	flags_obj = OBJ_IS_STYLISH
 	worn_accessory_slot = ACCESSORY_SLOT_DECOR
 	worn_accessory_limit = 2
-	style_postfix = list("neck", "left_wrist", "right_wrist")
+	style_postfix = list("neck", "left_wrist", "right_wrist", "garb")
 
 /obj/item/clothing/accessory/rosary/gold
 	name = "golden rosary"
