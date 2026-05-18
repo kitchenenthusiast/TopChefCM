@@ -1,3 +1,4 @@
+/datum/component/wearable_overlay //we appease compiler
 /obj/item/clothing/head/helmet
 	name = "helmet"
 	desc = "Standard Security gear. Protects the head from impacts."
@@ -184,238 +185,6 @@
 	flags_inv_hide = HIDEMASK|HIDEEARS|HIDEEYES
 	anti_hug = 1
 
-//===========================//MARINES HELMETS\\=================================\\
-//=======================================================================\\
-
-GLOBAL_LIST_INIT(allowed_helmet_items, list(
-	// TOBACCO-RELATED
-	/obj/item/tool/lighter/random = NO_GARB_OVERRIDE,
-	/obj/item/tool/lighter/zippo = NO_GARB_OVERRIDE,
-	/obj/item/storage/box/matches = NO_GARB_OVERRIDE,
-	/obj/item/storage/fancy/cigarettes/emeraldgreen = PREFIX_HELMET_GARB_OVERRIDE, // helmet_
-	/obj/item/storage/fancy/cigarettes/kpack = PREFIX_HELMET_GARB_OVERRIDE, // helmet_
-	/obj/item/storage/fancy/cigarettes/lucky_strikes = PREFIX_HELMET_GARB_OVERRIDE, // helmet_
-	/obj/item/storage/fancy/cigarettes/wypacket = PREFIX_HELMET_GARB_OVERRIDE, // helmet_
-	/obj/item/storage/fancy/cigarettes/lady_finger = PREFIX_HELMET_GARB_OVERRIDE, // helmet_
-	/obj/item/storage/fancy/cigarettes/blackpack = PREFIX_HELMET_GARB_OVERRIDE, // helmet_
-	/obj/item/storage/fancy/cigarettes/arcturian_ace = PREFIX_HELMET_GARB_OVERRIDE, // helmet_
-	/obj/item/storage/fancy/cigarettes/lucky_strikes_4 = PREFIX_HELMET_GARB_OVERRIDE, // helmet_
-	/obj/item/storage/fancy/cigarettes/spirit = PREFIX_HELMET_GARB_OVERRIDE, // helmet_
-	/obj/item/storage/fancy/cigarettes/spirit/yellow = PREFIX_HELMET_GARB_OVERRIDE, // helmet_
-
-	/obj/item/storage/fancy/cigar/matchbook = NO_GARB_OVERRIDE,
-	/obj/item/clothing/mask/cigarette/cigar = NO_GARB_OVERRIDE,
-	/obj/item/clothing/mask/electronic_cigarette = NO_GARB_OVERRIDE,
-
-	// CARDS
-	/obj/item/toy/deck = NO_GARB_OVERRIDE,
-	/obj/item/toy/deck/uno = NO_GARB_OVERRIDE,
-	/obj/item/toy/handcard = NO_GARB_OVERRIDE,
-	/obj/item/toy/handcard/aceofspades = NO_GARB_OVERRIDE,
-	/obj/item/toy/handcard/uno_reverse_red = NO_GARB_OVERRIDE,
-	/obj/item/toy/handcard/uno_reverse_blue = NO_GARB_OVERRIDE,
-	/obj/item/toy/handcard/uno_reverse_yellow = NO_GARB_OVERRIDE,
-	/obj/item/toy/handcard/uno_reverse_purple = NO_GARB_OVERRIDE,
-
-	// FOOD AND SNACKS
-	/obj/item/reagent_container/food/drinks/flask = NO_GARB_OVERRIDE,
-	/obj/item/reagent_container/food/drinks/flask/marine = NO_GARB_OVERRIDE,
-	/obj/item/reagent_container/food/snacks/eat_bar = NO_GARB_OVERRIDE,
-	/obj/item/reagent_container/food/snacks/mushroompizzaslice = NO_GARB_OVERRIDE, // Fuck whoever put these under different paths for some REASON
-	/obj/item/reagent_container/food/snacks/vegetablepizzaslice = NO_GARB_OVERRIDE,
-	/obj/item/reagent_container/food/snacks/meatpizzaslice = NO_GARB_OVERRIDE,
-	/obj/item/reagent_container/food/snacks/packaged_burrito = NO_GARB_OVERRIDE,
-	/obj/item/reagent_container/food/snacks/packaged_hdogs = NO_GARB_OVERRIDE,
-	/obj/item/reagent_container/food/snacks/wrapped/chunk = NO_GARB_OVERRIDE,
-	/obj/item/reagent_container/food/snacks/donkpocket = NO_GARB_OVERRIDE,
-	/obj/item/reagent_container/food/snacks/wrapped/booniebars = NO_GARB_OVERRIDE,
-	/obj/item/reagent_container/food/snacks/wrapped/barcardine = NO_GARB_OVERRIDE,
-
-	// EYEWEAR
-	/obj/item/clothing/glasses/mgoggles = PREFIX_HELMET_GARB_OVERRIDE, // helmet_
-	/obj/item/clothing/glasses/mgoggles/v2 = PREFIX_HELMET_GARB_OVERRIDE,
-	/obj/item/clothing/glasses/mgoggles/v2/prescription = PREFIX_HELMET_GARB_OVERRIDE,
-	/obj/item/clothing/glasses/mgoggles/v2/blue = PREFIX_HELMET_GARB_OVERRIDE,
-	/obj/item/clothing/glasses/mgoggles/v2/blue/prescription = PREFIX_HELMET_GARB_OVERRIDE,
-	/obj/item/clothing/glasses/mgoggles/v2/polarized_blue = PREFIX_HELMET_GARB_OVERRIDE,
-	/obj/item/clothing/glasses/mgoggles/v2/polarized_blue/prescription = PREFIX_HELMET_GARB_OVERRIDE,
-	/obj/item/clothing/glasses/mgoggles/v2/polarized_orange = PREFIX_HELMET_GARB_OVERRIDE,
-	/obj/item/clothing/glasses/mgoggles/v2/polarized_orange/prescription = PREFIX_HELMET_GARB_OVERRIDE,
-	/obj/item/clothing/glasses/mgoggles/prescription = PREFIX_HELMET_GARB_OVERRIDE, // helmet_
-	/obj/item/clothing/glasses/mgoggles/black = PREFIX_HELMET_GARB_OVERRIDE, // helmet_
-	/obj/item/clothing/glasses/mgoggles/black/prescription = PREFIX_HELMET_GARB_OVERRIDE, // helmet_
-	/obj/item/clothing/glasses/mgoggles/orange = PREFIX_HELMET_GARB_OVERRIDE, // helmet_
-	/obj/item/clothing/glasses/mgoggles/orange/prescription = PREFIX_HELMET_GARB_OVERRIDE, // helmet_
-	/obj/item/clothing/glasses/mgoggles/blue = PREFIX_HELMET_GARB_OVERRIDE, // helmet_
-	/obj/item/clothing/glasses/mgoggles/blue/prescription = PREFIX_HELMET_GARB_OVERRIDE, // helmet_
-	/obj/item/clothing/glasses/mgoggles/purple = PREFIX_HELMET_GARB_OVERRIDE, // helmet_
-	/obj/item/clothing/glasses/mgoggles/purple/prescription = PREFIX_HELMET_GARB_OVERRIDE,
-	/obj/item/clothing/glasses/mgoggles/yellow = PREFIX_HELMET_GARB_OVERRIDE,
-	/obj/item/clothing/glasses/mgoggles/yellow/prescription = PREFIX_HELMET_GARB_OVERRIDE,
-	/obj/item/clothing/glasses/mgoggles/red = PREFIX_HELMET_GARB_OVERRIDE,
-	/obj/item/clothing/glasses/mgoggles/red/prescription = PREFIX_HELMET_GARB_OVERRIDE,
-	/obj/item/clothing/glasses/sunglasses = NO_GARB_OVERRIDE,
-	/obj/item/clothing/glasses/sunglasses/prescription = NO_GARB_OVERRIDE,
-	/obj/item/clothing/glasses/sunglasses/aviator = NO_GARB_OVERRIDE,
-	/obj/item/clothing/glasses/sunglasses/aviator/silver = NO_GARB_OVERRIDE,
-	/obj/item/clothing/glasses/sunglasses/big = NO_GARB_OVERRIDE,
-	/obj/item/clothing/glasses/sunglasses/big/new_bimex/black = NO_GARB_OVERRIDE,
-	/obj/item/clothing/glasses/sunglasses/big/new_bimex = NO_GARB_OVERRIDE,
-	/obj/item/clothing/glasses/sunglasses/big/new_bimex/bronze = NO_GARB_OVERRIDE,
-	/obj/item/clothing/glasses/sunglasses/big/fake = NO_GARB_OVERRIDE,
-	/obj/item/clothing/glasses/sunglasses/big/fake/red = NO_GARB_OVERRIDE,
-	/obj/item/clothing/glasses/sunglasses/big/fake/orange = NO_GARB_OVERRIDE,
-	/obj/item/clothing/glasses/sunglasses/big/fake/yellow = NO_GARB_OVERRIDE,
-	/obj/item/clothing/glasses/sunglasses/big/fake/green = NO_GARB_OVERRIDE,
-	/obj/item/clothing/glasses/sunglasses/big/fake/blue = NO_GARB_OVERRIDE,
-	/obj/item/clothing/glasses/sunglasses/sechud = NO_GARB_OVERRIDE,
-	/obj/item/clothing/glasses/sunglasses/sechud/blue = NO_GARB_OVERRIDE,
-	/obj/item/clothing/glasses/eyepatch = NO_GARB_OVERRIDE,
-	/obj/item/clothing/glasses/eyepatch/left = NO_GARB_OVERRIDE,
-	/obj/item/clothing/glasses/eyepatch/white = NO_GARB_OVERRIDE,
-	/obj/item/clothing/glasses/eyepatch/white/left = NO_GARB_OVERRIDE,
-	/obj/item/clothing/glasses/eyepatch/green = NO_GARB_OVERRIDE,
-	/obj/item/clothing/glasses/eyepatch/green/left = NO_GARB_OVERRIDE,
-	/obj/item/clothing/glasses/regular/hipster = NO_GARB_OVERRIDE,
-	/obj/item/clothing/glasses/regular/hippie = NO_GARB_OVERRIDE,
-	/obj/item/clothing/glasses/sunglasses/hippie = NO_GARB_OVERRIDE,
-	/obj/item/clothing/glasses/sunglasses/hippie/green = NO_GARB_OVERRIDE,
-	/obj/item/clothing/glasses/sunglasses/hippie/sunrise = NO_GARB_OVERRIDE,
-	/obj/item/clothing/glasses/sunglasses/hippie/sunset = NO_GARB_OVERRIDE,
-	/obj/item/clothing/glasses/sunglasses/hippie/nightblue = NO_GARB_OVERRIDE,
-	/obj/item/clothing/glasses/sunglasses/hippie/midnight = NO_GARB_OVERRIDE,
-	/obj/item/clothing/glasses/sunglasses/hippie/bloodred = NO_GARB_OVERRIDE,
-	/obj/item/clothing/glasses/regular = NO_GARB_OVERRIDE,
-	/obj/item/clothing/glasses/mbcg = NO_GARB_OVERRIDE,
-	/obj/item/clothing/glasses/mgoggles/cmb_riot_shield = NO_GARB_OVERRIDE,
-	/obj/item/clothing/glasses/mgoggles/mp_riot_shield = NO_GARB_OVERRIDE,
-
-	// WALKMAN AND CASSETTES
-	/obj/item/device/walkman = NO_GARB_OVERRIDE,
-	/obj/item/device/cassette_tape/pop1 = NO_GARB_OVERRIDE,
-	/obj/item/device/cassette_tape/pop2 = NO_GARB_OVERRIDE,
-	/obj/item/device/cassette_tape/pop3 = NO_GARB_OVERRIDE,
-	/obj/item/device/cassette_tape/pop4 = NO_GARB_OVERRIDE,
-	/obj/item/device/cassette_tape/heavymetal = NO_GARB_OVERRIDE,
-	/obj/item/device/cassette_tape/hairmetal = NO_GARB_OVERRIDE,
-	/obj/item/device/cassette_tape/indie = NO_GARB_OVERRIDE,
-	/obj/item/device/cassette_tape/hiphop = NO_GARB_OVERRIDE,
-	/obj/item/device/cassette_tape/nam = NO_GARB_OVERRIDE,
-	/obj/item/device/cassette_tape/ocean = NO_GARB_OVERRIDE,
-	/obj/item/storage/pouch/cassette = NO_GARB_OVERRIDE,
-
-	// PREFERENCES GEAR
-	/obj/item/prop/helmetgarb/gunoil = NO_GARB_OVERRIDE,
-	/obj/item/clothing/accessory/helmet/cover/netting = NO_GARB_OVERRIDE,
-	/obj/item/clothing/accessory/helmet/cover/netting/desert = NO_GARB_OVERRIDE,
-	/obj/item/clothing/accessory/helmet/cover/netting/jungle = NO_GARB_OVERRIDE,
-	/obj/item/clothing/accessory/helmet/cover/netting/urban = NO_GARB_OVERRIDE,
-	/obj/item/prop/helmetgarb/spent_buckshot = NO_GARB_OVERRIDE,
-	/obj/item/prop/helmetgarb/spent_slug = NO_GARB_OVERRIDE,
-	/obj/item/prop/helmetgarb/spent_flech = NO_GARB_OVERRIDE,
-	/obj/item/prop/helmetgarb/cartridge = NO_GARB_OVERRIDE,
-	/obj/item/prop/helmetgarb/prescription_bottle = NO_GARB_OVERRIDE,
-	/obj/item/clothing/accessory/helmet/cover/raincover = NO_GARB_OVERRIDE,
-	/obj/item/clothing/accessory/helmet/cover/raincover/jungle = NO_GARB_OVERRIDE,
-	/obj/item/clothing/accessory/helmet/cover/raincover/desert = NO_GARB_OVERRIDE,
-	/obj/item/clothing/accessory/helmet/cover/raincover/urban = NO_GARB_OVERRIDE,
-	/obj/item/prop/helmetgarb/rabbitsfoot = NO_GARB_OVERRIDE,
-	/obj/item/clothing/accessory/rosary = NO_GARB_OVERRIDE, // This one was already in the game for some reason, but never had an object
-	/obj/item/clothing/accessory/rosary/gold = NO_GARB_OVERRIDE,
-	/obj/item/prop/helmetgarb/lucky_feather = NO_GARB_OVERRIDE,
-	/obj/item/prop/helmetgarb/lucky_feather/blue = NO_GARB_OVERRIDE,
-	/obj/item/prop/helmetgarb/lucky_feather/purple = NO_GARB_OVERRIDE,
-	/obj/item/prop/helmetgarb/lucky_feather/yellow = NO_GARB_OVERRIDE,
-	/obj/item/prop/helmetgarb/trimmed_wire = NO_GARB_OVERRIDE,
-	/obj/item/prop/helmetgarb/helmet_nvg = PREFIX_HELMET_GARB_OVERRIDE, // helmet_
-	/obj/item/prop/helmetgarb/helmet_nvg/cosmetic = PREFIX_HELMET_GARB_OVERRIDE, // helmet_
-	/obj/item/prop/helmetgarb/helmet_nvg/marsoc = PREFIX_HELMET_GARB_OVERRIDE, // helmet_
-	/obj/item/prop/helmetgarb/helmet_gasmask = NO_GARB_OVERRIDE,
-	/obj/item/prop/helmetgarb/flair_initech = NO_GARB_OVERRIDE,
-	/obj/item/prop/helmetgarb/flair_io = NO_GARB_OVERRIDE,
-	/obj/item/prop/helmetgarb/flair_peace = NO_GARB_OVERRIDE,
-	/obj/item/prop/helmetgarb/flair_uscm = NO_GARB_OVERRIDE,
-	/obj/item/prop/helmetgarb/bullet_pipe = NO_GARB_OVERRIDE,
-	/obj/item/prop/helmetgarb/spacejam_tickets = NO_GARB_OVERRIDE,
-	/obj/item/prop/helmetgarb/family_photo = NO_GARB_OVERRIDE,
-	/obj/item/prop/helmetgarb/compass = NO_GARB_OVERRIDE,
-	/obj/item/prop/helmetgarb/bug_spray = NO_GARB_OVERRIDE,
-
-	// MISC
-	/obj/item/tool/pen = PREFIX_HELMET_GARB_OVERRIDE, // helmet_
-	/obj/item/tool/pen/blue = PREFIX_HELMET_GARB_OVERRIDE, // helmet_
-	/obj/item/tool/pen/red = PREFIX_HELMET_GARB_OVERRIDE, // helmet_
-	/obj/item/tool/pen/multicolor/fountain = NO_GARB_OVERRIDE,
-	/obj/item/clothing/glasses/welding = NO_GARB_OVERRIDE,
-	/obj/item/clothing/head/headband = NO_GARB_OVERRIDE,
-	/obj/item/clothing/head/headband/tan = NO_GARB_OVERRIDE,
-	/obj/item/clothing/head/headband/red = NO_GARB_OVERRIDE,
-	/obj/item/clothing/head/headband/brown = PREFIX_HELMET_GARB_OVERRIDE, // helmet_
-	/obj/item/clothing/head/headband/gray = PREFIX_HELMET_GARB_OVERRIDE, // helmet_
-	/obj/item/clothing/head/headband/intel = PREFIX_HELMET_GARB_OVERRIDE, // helmet_
-	/obj/item/clothing/head/headband/squad = PREFIX_HELMET_GARB_OVERRIDE, // helmet_
-	/obj/item/clothing/head/headband/rebel = PREFIX_HELMET_GARB_OVERRIDE, // helmet_
-	/obj/item/tool/candle = NO_GARB_OVERRIDE,
-	/obj/item/clothing/mask/facehugger = NO_GARB_OVERRIDE,
-	/obj/item/clothing/mask/facehugger/lamarr = NO_GARB_OVERRIDE,
-	/obj/item/toy/crayon/red = NO_GARB_OVERRIDE,
-	/obj/item/toy/crayon/orange = NO_GARB_OVERRIDE,
-	/obj/item/toy/crayon/yellow = NO_GARB_OVERRIDE,
-	/obj/item/toy/crayon/green = NO_GARB_OVERRIDE,
-	/obj/item/toy/crayon/blue = NO_GARB_OVERRIDE,
-	/obj/item/toy/crayon/purple = NO_GARB_OVERRIDE,
-	/obj/item/toy/crayon/rainbow = NO_GARB_OVERRIDE,
-	/obj/item/toy/crayon/pride/trans = NO_GARB_OVERRIDE,
-	/obj/item/toy/crayon/pride/gay = NO_GARB_OVERRIDE,
-	/obj/item/toy/crayon/pride/lesbian = NO_GARB_OVERRIDE,
-	/obj/item/toy/crayon/pride/bi = NO_GARB_OVERRIDE,
-	/obj/item/toy/crayon/pride/pan = NO_GARB_OVERRIDE,
-	/obj/item/toy/crayon/pride/ace = NO_GARB_OVERRIDE,
-	/obj/item/toy/crayon/pride/trans = NO_GARB_OVERRIDE,
-	/obj/item/toy/crayon/pride/enby = NO_GARB_OVERRIDE,
-	/obj/item/toy/crayon/pride/fluid = NO_GARB_OVERRIDE,
-	/obj/item/paper = NO_GARB_OVERRIDE,
-	/obj/item/device/flashlight/flare = NO_GARB_OVERRIDE,
-	/obj/item/clothing/head/headset = NO_GARB_OVERRIDE,
-	/obj/item/clothing/accessory/patch/uscmpatch = NO_GARB_OVERRIDE,
-	/obj/item/clothing/accessory/patch/falcon = NO_GARB_OVERRIDE,
-	/obj/item/clothing/accessory/patch/falcon/squad_main = NO_GARB_OVERRIDE,
-	/obj/item/clothing/accessory/patch/cec_patch = NO_GARB_OVERRIDE,
-	/obj/item/clothing/accessory/patch/freelancer_patch = NO_GARB_OVERRIDE,
-	/obj/item/clothing/accessory/patch/merc_patch = NO_GARB_OVERRIDE,
-	/obj/item/clothing/accessory/patch/devils = NO_GARB_OVERRIDE,
-	/obj/item/clothing/accessory/patch/forecon = NO_GARB_OVERRIDE,
-	/obj/item/clothing/accessory/patch/royal_marines = NO_GARB_OVERRIDE,
-	/obj/item/clothing/accessory/patch/upp = NO_GARB_OVERRIDE,
-	/obj/item/clothing/accessory/patch/upp/airborne = NO_GARB_OVERRIDE,
-	/obj/item/clothing/accessory/patch/upp/naval = NO_GARB_OVERRIDE,
-	/obj/item/clothing/accessory/patch/ua = NO_GARB_OVERRIDE,
-	/obj/item/clothing/accessory/patch/uasquare = NO_GARB_OVERRIDE,
-	/obj/item/clothing/accessory/patch/falconalt = NO_GARB_OVERRIDE,
-	/obj/item/clothing/accessory/patch/twe = NO_GARB_OVERRIDE,
-	/obj/item/clothing/accessory/patch/uscmlarge = NO_GARB_OVERRIDE,
-	/obj/item/clothing/accessory/patch/wy = NO_GARB_OVERRIDE,
-	/obj/item/clothing/accessory/patch/wysquare = NO_GARB_OVERRIDE,
-	/obj/item/clothing/accessory/patch/wy_faction = NO_GARB_OVERRIDE,
-	/obj/item/clothing/accessory/patch/wy_white = NO_GARB_OVERRIDE,
-	/obj/item/clothing/accessory/patch/wyfury = NO_GARB_OVERRIDE,
-	/obj/item/clothing/accessory/patch/upp/alt = NO_GARB_OVERRIDE,
-	/obj/item/clothing/accessory/patch/medic_patch = NO_GARB_OVERRIDE,
-	/obj/item/clothing/accessory/patch/clf_patch = NO_GARB_OVERRIDE,
-	/obj/item/clothing/accessory/patch/hyperdyne_patch = NO_GARB_OVERRIDE,
-	/obj/item/ammo_magazine/handful = NO_GARB_OVERRIDE,
-	/obj/item/prop/helmetgarb/riot_shield = NO_GARB_OVERRIDE,
-	/obj/item/attachable/flashlight = NO_GARB_OVERRIDE,
-	/obj/item/prop/helmetgarb/chaplain_patch = NO_GARB_OVERRIDE,
-
-	// MEDICAL
-	/obj/item/stack/medical/bruise_pack = NO_GARB_OVERRIDE,
-	/obj/item/stack/medical/ointment = NO_GARB_OVERRIDE,
-	/obj/item/tool/surgery/scalpel = NO_GARB_OVERRIDE,
-	/obj/item/reagent_container/hypospray/autoinjector = NO_GARB_OVERRIDE,
-	/obj/item/storage/pill_bottle/packet = NO_GARB_OVERRIDE,
-))
-
 /obj/item/clothing/head/helmet/marine
 	name = "\improper M10 pattern marine helmet"
 	desc = "A standard M10 Pattern Helmet. The inside label, along with washing information, reads, 'The difference between an open-casket and closed-casket funeral. Wear on head for best results.'. There is a built-in camera on the right side."
@@ -569,24 +338,30 @@ GLOBAL_LIST_INIT(allowed_helmet_items, list(
 		..()
 
 /obj/item/clothing/head/helmet/marine/attackby(obj/item/attacking_item, mob/user)
-
-	if (istype(attacking_item, /obj/item/clothing/accessory)) //attach accessories first
-		var/obj/item/clothing/accessory/Attachable_Accessory = attacking_item
-		if (LAZYLEN(src.accessories) >= src.worn_accessory_limit)
-			to_chat(user, SPAN_WARNING("You cannot fit anymore accessoires onto \the [src]!"))
-			return TRUE
-		if(user.drop_held_item(Attachable_Accessory))
-			Attachable_Accessory.forceMove(src)
-			LAZYINITLIST(src.accessories)
-			src.accessories += Attachable_Accessory
-			to_chat(user, SPAN_NOTICE("You attach [Attachable_Accessory] to \the [src]."))
-			update_icon()
-			return TRUE
-
-	. = ..()
-	if(.)
-		return
-
+	var/matched_type = is_type_in_list(attacking_item, GLOB.allowed_helmet_items)
+	if(matched_type)
+		if(!attacking_item.GetComponent(/datum/component/wearable_overlay))
+			attacking_item.AddComponent(/datum/component/wearable_overlay, attacking_item.helmet_garb_layer)
+		if(LAZYLEN(src.accessories) < src.worn_accessory_limit) //try to attach as accessory first if we have slots
+			if(user.drop_held_item(attacking_item))
+				attacking_item.forceMove(src)
+				LAZYINITLIST(src.accessories)
+				src.accessories += attacking_item
+				to_chat(user, SPAN_NOTICE("You attach [attacking_item] to \the [src]."))
+				return TRUE
+		if(pockets)
+			if(pockets.attackby(attacking_item, user))
+				to_chat(user, SPAN_NOTICE("You tuck the [attacking_item] into \the [src]."))
+				return TRUE
+			else
+				to_chat(user, SPAN_NOTICE("[attacking_item] won't fit in \the [src]!"))
+				return FALSE
+		else
+			to_chat(user, SPAN_NOTICE("\The [src] doesn't have any pocket space left!"))
+			return FALSE
+	//==================================================//
+	//   Handling for ammo, visors, screwdrivers here   //
+	//==================================================//
 	if(istype(attacking_item, /obj/item/ammo_magazine) && world.time > helmet_bash_cooldown && user)
 		var/obj/item/ammo_magazine/M = attacking_item
 		var/ammo_level = "more than half full."
@@ -605,15 +380,12 @@ GLOBAL_LIST_INIT(allowed_helmet_items, list(
 
 	if(istype(attacking_item, /obj/item/device/helmet_visor))
 		var/obj/item/device/helmet_visor/new_visor = attacking_item
-
 		if(!new_visor.can_attach_to(src))
 			to_chat(user, SPAN_NOTICE("The [new_visor] does not fit on the [src]."))
 			return
-
 		if(length(inserted_visors) >= max_inserted_visors)
 			to_chat(user, SPAN_NOTICE("[src] has used all of its visor attachment sockets."))
 			return
-
 		for(var/obj/item/device/helmet_visor/cycled_visor as anything in (built_in_visors + inserted_visors))
 			if(cycled_visor.type == new_visor.type)
 				to_chat(user, SPAN_NOTICE("[src] already has this type of HUD connected."))
@@ -655,8 +427,10 @@ GLOBAL_LIST_INIT(allowed_helmet_items, list(
 		cycle_action.set_default_overlay()
 		if(!length(built_in_visors))
 			cycle_action.remove_from(user)
-		return
-	return pockets.attackby(attacking_item, user) //fallback storage if our accessories are full
+		return TRUE
+	if(pockets && pockets.attackby(attacking_item, user))
+		return TRUE //fallback storage if our accessories are full
+	return ..()
 
 /obj/item/clothing/head/helmet/marine/on_pocket_insertion()
 	update_icon()
@@ -670,45 +444,48 @@ GLOBAL_LIST_INIT(allowed_helmet_items, list(
 	// adding an image to src or trying to render it in overlays does nothing because
 	// the "primary" icon of src is the holdable object, not the onmob.
 	// the human sprite is the only thing that reliably renders things, so
-	// we have to add overlays to that.
+	// we have to add overlays to custom helmet_overlays list.
 	helmet_overlays = list() // Rebuild our list every time
-	var/list/all_gear = (src.accessories || list()) + pockets.contents
+	var/list/all_gear = (src.accessories || list()) + (pockets ? pockets.contents : list())
 	if(length(all_gear) && (flags_marine_helmet & HELMET_GARB_OVERLAY))
-		var/list/above_band_layer = list()
-		var/list/below_band_layer = list()
 		var/has_helmet_band = FALSE
-
 		for(var/obj/item/garb_object in all_gear)
-			if(garb_object.type in GLOB.allowed_helmet_items)
-				var/image/new_overlay = garb_object.get_garb_overlay(GLOB.allowed_helmet_items[garb_object.type])
-
-				if(istype(garb_object, /obj/item/clothing/accessory))
-					var/datum/Universal_Accessory = garb_object
-					if(hasvar(Universal_Accessory, "helmet_background_layer") && Universal_Accessory.vars["helmet_background_layer"])
-						below_band_layer += new_overlay
-					else
-						above_band_layer += new_overlay
-					continue
-				var/has_band = !HAS_FLAG(garb_object.flags_obj, OBJ_NO_HELMET_BAND)
-				if(has_band)
-					has_helmet_band = TRUE
-					above_band_layer += new_overlay
-				else
-					below_band_layer += new_overlay
-
+			var/matched_type = is_type_in_list(garb_object, GLOB.allowed_helmet_items)
+			if(!matched_type)
+				continue
+			var/image/new_overlay = garb_object.get_garb_overlay(GLOB.allowed_helmet_items[matched_type])
+			if(!new_overlay)
+				continue
+			new_overlay.dir = src.dir //force overlay to look dxn helmet is looking
+			var/assigned_layer = garb_object.helmet_garb_layer
+			if(!assigned_layer)
+				assigned_layer = 0.03
+			new_overlay.layer = FLOAT_LAYER + assigned_layer
+			helmet_overlays += new_overlay
+			if(!HAS_FLAG(garb_object.flags_obj, OBJ_NO_HELMET_BAND))
+				has_helmet_band = TRUE
 		if(has_helmet_band)
-		//note: BYOND renders lists with l -> r as background -> foreground; so we build layers upwards in our overlays list
 			var/image/band_overlay = overlay_image(helmet_band_icon, "helmet_band", color, RESET_COLOR)
-			helmet_overlays = below_band_layer + band_overlay + above_band_layer
-		else
-			helmet_overlays = below_band_layer + above_band_layer
-
+			band_overlay.layer = FLOAT_LAYER + 0.01 //hard set render as the lowest layer on a helmet
+			helmet_overlays.Insert(1, band_overlay)
+		if(length(helmet_overlays) > 1)
+			sort_helmet_overlays(helmet_overlays)
 	if(active_visor)
-		helmet_overlays += overlay_image(active_visor.helmet_overlay_icon, active_visor.helmet_overlay, color, RESET_COLOR)
-
+		var/image/visor_overlay = overlay_image(active_visor.helmet_overlay_icon, active_visor.helmet_overlay, color, RESET_COLOR)
+		visor_overlay.layer = FLOAT_LAYER + 0.07 //render above everything so we can see stinky marines with medhuds on
+		helmet_overlays += visor_overlay
 	if(ismob(loc))
-		var/mob/moob = loc
-		moob.update_inv_head()
+		var/mob/living/wearer = loc
+		wearer.update_inv_head()
+
+//localized sorting proc
+/obj/item/clothing/head/helmet/marine/proc/sort_helmet_overlays(list/list_to_sort)
+	for(var/outer_index = 1 to list_to_sort.len)
+		for(var/inner_index = outer_index + 1 to list_to_sort.len)
+			var/image/image_A = list_to_sort[outer_index]
+			var/image/image_B = list_to_sort[inner_index]
+			if(image_A.layer > image_B.layer)
+				list_to_sort.Swap(outer_index, inner_index)
 
 /obj/item/clothing/head/helmet/marine/equipped(mob/living/carbon/human/mob, slot)
 	if(camera)
