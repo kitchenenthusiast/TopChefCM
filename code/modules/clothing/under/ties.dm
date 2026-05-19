@@ -1525,6 +1525,7 @@ Wrist Accessories
 		WEAR_AS_GARB = 'icons/mob/humans/onmob/clothing/helmet_garb/misc.dmi',
 	)
 	flags_obj = OBJ_IS_STYLISH
+	valid_accessory_slots = list (ACCESSORY_SLOT_HELM_C)
 	worn_accessory_slot = ACCESSORY_SLOT_DECOR
 	worn_accessory_limit = 2
 	style_postfix = list("neck", "left_wrist", "right_wrist", "garb")

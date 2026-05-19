@@ -1,4 +1,5 @@
 /datum/component/wearable_overlay //we appease compiler
+
 /obj/item/clothing/head/helmet
 	name = "helmet"
 	desc = "Standard Security gear. Protects the head from impacts."
@@ -230,7 +231,7 @@
 	var/helmet_band_icon = 'icons/mob/humans/onmob/clothing/helmet_garb/misc.dmi'
 
 	///Any visors built into the helmet
-	var/list/built_in_visors = list(new /obj/item/device/helmet_visor)
+	var/list/built_in_visors
 	///Any visors that have been added into the helmet
 	var/list/inserted_visors = list()
 	///Max amount of inserted visors
@@ -245,6 +246,7 @@
 
 /obj/item/clothing/head/helmet/marine/Initialize(mapload, new_protection[] = list(MAP_ICE_COLONY = ICE_PLANET_MIN_COLD_PROT))
 	. = ..()
+	built_in_visors = list(new /obj/item/device/helmet_visor(src))
 	AddComponent(/datum/component/overwatch_console_control)
 	AddElement(/datum/element/corp_label/armat)
 	if(!(flags_atom & NO_NAME_OVERRIDE))
@@ -257,7 +259,10 @@
 	if(!(flags_atom & NO_GAMEMODE_SKIN))
 		select_gamemode_skin(type, null, new_protection)
 
-	helmet_overlays = list() //To make things simple.
+	if(!helmet_overlays)
+		helmet_overlays = list()
+	else
+		helmet_overlays.Cut()
 
 	pockets = new(src)
 	pockets.storage_slots = HAS_FLAG(flags_marine_helmet, HELMET_GARB_OVERLAY) ? storage_slots + storage_slots_reserved_for_garb : storage_slots
@@ -337,107 +342,154 @@
 	if(pockets.handle_mousedrop(usr, over_object))
 		..()
 
+/obj/item/clothing/head/helmet/is_valid_accessory(obj/item/accessory_item)
+	return ..() || istype(accessory_item, /obj/item/clothing/head/headband)
+
 /obj/item/clothing/head/helmet/marine/attackby(obj/item/attacking_item, mob/user)
-	var/matched_type = is_type_in_list(attacking_item, GLOB.allowed_helmet_items)
-	if(matched_type)
-		if(!attacking_item.GetComponent(/datum/component/wearable_overlay))
-			attacking_item.AddComponent(/datum/component/wearable_overlay, attacking_item.helmet_garb_layer)
-		if(LAZYLEN(src.accessories) < src.worn_accessory_limit) //try to attach as accessory first if we have slots
-			if(user.drop_held_item(attacking_item))
-				attacking_item.forceMove(src)
-				LAZYINITLIST(src.accessories)
-				src.accessories += attacking_item
-				to_chat(user, SPAN_NOTICE("You attach [attacking_item] to \the [src]."))
-				return TRUE
-		if(pockets)
-			if(pockets.attackby(attacking_item, user))
-				to_chat(user, SPAN_NOTICE("You tuck the [attacking_item] into \the [src]."))
-				return TRUE
-			else
-				to_chat(user, SPAN_NOTICE("[attacking_item] won't fit in \the [src]!"))
-				return FALSE
-		else
-			to_chat(user, SPAN_NOTICE("\The [src] doesn't have any pocket space left!"))
-			return FALSE
-	//==================================================//
-	//   Handling for ammo, visors, screwdrivers here   //
-	//==================================================//
-	if(istype(attacking_item, /obj/item/ammo_magazine) && world.time > helmet_bash_cooldown && user)
-		var/obj/item/ammo_magazine/M = attacking_item
-		var/ammo_level = "more than half full."
-		playsound(user, 'sound/items/trayhit1.ogg', 15, FALSE)
-		if(M.current_rounds == (M.max_rounds/2))
-			ammo_level = "half full."
-		if(M.current_rounds < (M.max_rounds/2))
-			ammo_level = "less than half full."
-		if(M.current_rounds < (M.max_rounds/6))
-			ammo_level = "almost empty."
-		if(M.current_rounds == 0)
-			ammo_level = "empty. Uh oh."
-		user.visible_message("[user] bashes [M] against their helmet", "You bash [M] against your helmet. It is [ammo_level]")
-		helmet_bash_cooldown = world.time + 20 SECONDS
-		return
+	if(handle_visor(attacking_item, user))
+		return TRUE
+	if(handle_ammo_bash(attacking_item, user))
+		return TRUE
+	if(handle_tool(attacking_item, user))
+		return TRUE
+	if(handle_accessory(attacking_item, user))
+		return TRUE
+	if(handle_storage(attacking_item, user))
+		return TRUE
+	return ..()
+//==============================================//
+//          INTERNAL HANDLING SUBPROCS          //
+//==============================================//
+//helmet bash
+/obj/item/clothing/head/helmet/marine/proc/handle_ammo_bash(obj/item/attacking_item, mob/user)
+	if(!istype(attacking_item, /obj/item/ammo_magazine))
+		return FALSE
+	if(world.time <= helmet_bash_cooldown || !user)
+		return FALSE
+	var/obj/item/ammo_magazine/attacking_mag = attacking_item
+	var/ammo_level = "more than half full."
+	playsound(user, 'sound/items/trayhit1.ogg', 15, FALSE)
+	if(attacking_mag.current_rounds == (attacking_mag.max_rounds/2))
+		ammo_level = "half full."
+	if(attacking_mag.current_rounds < (attacking_mag.max_rounds/2))
+		ammo_level = "less than half full."
+	if(attacking_mag.current_rounds < (attacking_mag.max_rounds/6))
+		ammo_level = "almost empty."
+	if(attacking_mag.current_rounds == 0)
+		ammo_level = "empty. Uh oh."
+	user.visible_message("[user] bashes [attacking_mag] against their helmet", "You bash [attacking_mag] against your helmet. It is [ammo_level]")
+	helmet_bash_cooldown = world.time + 20 SECONDS
+	return TRUE
 
-	if(istype(attacking_item, /obj/item/device/helmet_visor))
-		var/obj/item/device/helmet_visor/new_visor = attacking_item
-		if(!new_visor.can_attach_to(src))
-			to_chat(user, SPAN_NOTICE("The [new_visor] does not fit on the [src]."))
-			return
-		if(length(inserted_visors) >= max_inserted_visors)
-			to_chat(user, SPAN_NOTICE("[src] has used all of its visor attachment sockets."))
-			return
-		for(var/obj/item/device/helmet_visor/cycled_visor as anything in (built_in_visors + inserted_visors))
-			if(cycled_visor.type == new_visor.type)
-				to_chat(user, SPAN_NOTICE("[src] already has this type of HUD connected."))
-				return
-		if(!user.drop_held_item())
-			return
+//visors
+/obj/item/clothing/head/helmet/marine/proc/handle_visor(obj/item/attacking_item, mob/user)
+	if(!istype(attacking_item, /obj/item/device/helmet_visor))
+		return FALSE
+	var/obj/item/device/helmet_visor/new_visor = attacking_item
+	if(!new_visor.can_attach_to(src))
+		to_chat(user, SPAN_NOTICE("The [new_visor] does not fit on the [src]."))
+		return TRUE
+	if(length(inserted_visors) >= max_inserted_visors)
+		to_chat(user, SPAN_NOTICE("[src] has used all of its visor attachment sockets."))
+		return TRUE
+	for(var/obj/item/device/helmet_visor/cycled_visor as anything in (built_in_visors + inserted_visors))
+		if(cycled_visor.type == new_visor.type)
+			to_chat(user, SPAN_NOTICE("[src] already has this type of HUD connected."))
+			return TRUE
+	if(!user.drop_held_item())
+		return TRUE
 
-		inserted_visors += new_visor
-		to_chat(user, SPAN_NOTICE("You connect [new_visor] to the [src]."))
-		new_visor.forceMove(src)
-		if(!(locate(/datum/action/item_action/cycle_helmet_huds) in actions))
-			var/datum/action/item_action/cycle_helmet_huds/new_action = new(src)
-			new_action.give_to(user)
-		return
+	inserted_visors += new_visor
+	to_chat(user, SPAN_NOTICE("You connect [new_visor] to the [src]."))
+	new_visor.forceMove(src)
+	if(!(locate(/datum/action/item_action/cycle_helmet_huds) in actions))
+		var/datum/action/item_action/cycle_helmet_huds/new_action = new(src)
+		new_action.give_to(user)
+	return TRUE
 
-	if(HAS_TRAIT(attacking_item, TRAIT_TOOL_SCREWDRIVER))
-		// If there isn't anything to remove, return.
-		if(!length(inserted_visors))
-			// If the user is trying to remove a built-in visor, give them a more helpful failure message.
-			switch(length(built_in_visors))
-				if(1) // Messy plural handling
-					to_chat(user, SPAN_WARNING("The visor on [src] is built-in!"))
-				if(2 to INFINITY)
-					to_chat(user, SPAN_WARNING("The visors on [src] are built-in!"))
-			return
+//screwdriver specifically for visors
+/obj/item/clothing/head/helmet/marine/proc/handle_tool(obj/item/attacking_item, mob/user)
+	if(!HAS_TRAIT(attacking_item, TRAIT_TOOL_SCREWDRIVER))
+		return FALSE
+	if(!length(inserted_visors))
+	// If the user is trying to remove a built-in visor, give them a more helpful failure message.
+		switch(length(built_in_visors))
+			if(1) // Messy plural handling
+				to_chat(user, SPAN_WARNING("The visor on [src] is built-in!"))
+			if(2 to INFINITY)
+				to_chat(user, SPAN_WARNING("The visors on [src] are built-in!"))
+		return TRUE
 
-		if(active_visor)
-			var/obj/item/device/helmet_visor/temp_visor_holder = active_visor
-			active_visor = null
-			toggle_visor(user, temp_visor_holder, TRUE)
+	if(active_visor)
+		var/obj/item/device/helmet_visor/temp_visor_holder = active_visor
+		active_visor = null
+		toggle_visor(user, temp_visor_holder, TRUE)
 
-		for(var/obj/item/device/helmet_visor/visor as anything in inserted_visors)
-			visor.forceMove(get_turf(src))
+	for(var/obj/item/device/helmet_visor/visor as anything in inserted_visors)
+		visor.forceMove(get_turf(src))
 
-		inserted_visors = list()
-		to_chat(user, SPAN_NOTICE("You remove the inserted visors."))
+	inserted_visors = list()
+	to_chat(user, SPAN_NOTICE("You remove the inserted visors."))
 
-		var/datum/action/item_action/cycle_helmet_huds/cycle_action = locate() in actions
+	var/datum/action/item_action/cycle_helmet_huds/cycle_action = locate() in actions
+	if(cycle_action)
 		cycle_action.set_default_overlay()
 		if(!length(built_in_visors))
 			cycle_action.remove_from(user)
+	return TRUE
+
+//accessory handling
+/obj/item/clothing/head/helmet/marine/proc/handle_accessory(obj/item/attacking_item, mob/user)
+	if(!is_valid_accessory(attacking_item))
+		return FALSE
+	var/is_helmet_garb = is_type_in_list (attacking_item, GLOB.allowed_helmet_items)
+	if(!is_helmet_garb)
+		return FALSE
+	if(length(src.accessories || list()) >= src.worn_accessory_limit)
+		to_chat(user, SPAN_NOTICE("[src] has no free accessory slots."))
 		return TRUE
-	if(pockets && pockets.attackby(attacking_item, user))
-		return TRUE //fallback storage if our accessories are full
-	return ..()
+	if(!safe_equip_mob(attacking_item, user, src))
+		return TRUE
+	LAZYINITLIST(src.accessories)
+	src.accessories += attacking_item
+	if(!attacking_item.GetComponent(/datum/component/wearable_overlay))
+		attacking_item.AddComponent(/datum/component/wearable_overlay, attacking_item.helmet_garb_layer)
+	to_chat(user, SPAN_NOTICE("You attach [attacking_item] to \the [src]."))
+	update_icon()
+	return TRUE
 
-/obj/item/clothing/head/helmet/marine/on_pocket_insertion()
+//storage handling
+/obj/item/clothing/head/helmet/marine/proc/handle_storage(obj/item/attacking_item, mob/user)
+	var/is_helmet_garb = is_type_in_list(attacking_item, GLOB.allowed_helmet_items)
+	if(!is_helmet_garb)
+		return FALSE
+	if(pockets)
+		if(!safe_move_to_storage(attacking_item, user, pockets))
+			return TRUE
+		on_pocket_insertion(attacking_item)
+		to_chat(user, SPAN_NOTICE("You tuck the [attacking_item] into \the [src]."))
+		return TRUE
+	to_chat(user, SPAN_NOTICE("[attacking_item] won't fit in \the [src]!"))
+	return TRUE
+
+//===================== HOOKS ==================//
+/obj/item/clothing/head/helmet/marine/on_pocket_insertion(obj/item/inserted_item)
+	if(!inserted_item)
+		return
+	var/matched_type = is_type_in_list(inserted_item, GLOB.allowed_helmet_items)
+	if(matched_type)
+		if(!inserted_item.GetComponent(/datum/component/wearable_overlay))
+			inserted_item.AddComponent(/datum/component/wearable_overlay, inserted_item.helmet_garb_layer)
 	update_icon()
 
-/obj/item/clothing/head/helmet/marine/on_pocket_removal()
+/obj/item/clothing/head/helmet/marine/on_pocket_removal(obj/item/inserted_item)
+	if(inserted_item)
+		var/datum/component/wearable_overlay/wearable = inserted_item.GetComponent(/datum/component/wearable_overlay)
+		if(wearable)
+			qdel(wearable)
 	update_icon()
 
+//overlay updates
 /obj/item/clothing/head/helmet/marine/update_icon()
 	// Currently done by delegating to the human onmob head inventory updater
 	// not the best *possible* solution, but this is complicated by the fact that
@@ -445,35 +497,63 @@
 	// the "primary" icon of src is the holdable object, not the onmob.
 	// the human sprite is the only thing that reliably renders things, so
 	// we have to add overlays to custom helmet_overlays list.
-	helmet_overlays = list() // Rebuild our list every time
-	var/list/all_gear = (src.accessories || list()) + (pockets ? pockets.contents : list())
-	if(length(all_gear) && (flags_marine_helmet & HELMET_GARB_OVERLAY))
-		var/has_helmet_band = FALSE
-		for(var/obj/item/garb_object in all_gear)
-			var/matched_type = is_type_in_list(garb_object, GLOB.allowed_helmet_items)
-			if(!matched_type)
+	if(!helmet_overlays)
+		helmet_overlays = list()
+	else
+		helmet_overlays.Cut()
+	var/list/all_gear = list()
+	if(LAZYLEN(src.accessories))
+		for(var/obj/item/accessory_item as anything in src.accessories.Copy())
+			if(QDELETED(accessory_item) || accessory_item.loc != src)
+				src.accessories -= accessory_item
 				continue
-			var/image/new_overlay = garb_object.get_garb_overlay(GLOB.allowed_helmet_items[matched_type])
-			if(!new_overlay)
-				continue
-			new_overlay.dir = src.dir //force overlay to look dxn helmet is looking
-			var/assigned_layer = garb_object.helmet_garb_layer
-			if(!assigned_layer)
-				assigned_layer = 0.03
-			new_overlay.layer = FLOAT_LAYER + assigned_layer
-			helmet_overlays += new_overlay
-			if(!HAS_FLAG(garb_object.flags_obj, OBJ_NO_HELMET_BAND))
-				has_helmet_band = TRUE
-		if(has_helmet_band)
-			var/image/band_overlay = overlay_image(helmet_band_icon, "helmet_band", color, RESET_COLOR)
-			band_overlay.layer = FLOAT_LAYER + 0.01 //hard set render as the lowest layer on a helmet
-			helmet_overlays.Insert(1, band_overlay)
-		if(length(helmet_overlays) > 1)
-			sort_helmet_overlays(helmet_overlays)
+			all_gear += accessory_item
+	if(pockets)
+		all_gear += pockets.contents
+	if(!length(all_gear) && !active_visor)
+		if(ismob(loc))
+			var/mob/living/wearer = loc
+			wearer.update_inv_head()
+		return
+
+	var/has_helmet_band = FALSE
+	for(var/obj/item/garb_object in all_gear)
+		var/image/new_overlay = garb_object.get_garb_overlay()
+		if(new_overlay)
+			new_overlay = image(new_overlay)
+		else if(garb_object.icon && garb_object.icon_state)
+			new_overlay = image(garb_object.icon, garb_object.icon_state)
+		else
+			continue
+		new_overlay.appearance_flags = RESET_COLOR | RESET_ALPHA
+		var/assigned_layer = garb_object.helmet_garb_layer
+		var/datum/component/wearable_overlay/wearable = garb_object.GetComponent(/datum/component/wearable_overlay)
+		if(wearable)
+			assigned_layer = wearable.layer_offset
+		new_overlay.layer = FLOAT_LAYER + assigned_layer
+		new_overlay.dir = src.dir
+		helmet_overlays += new_overlay
+
+		if(!HAS_FLAG(garb_object.flags_obj, OBJ_NO_HELMET_BAND))
+			has_helmet_band = TRUE
+
+	if(has_helmet_band)
+		var/image/band_overlay = overlay_image(helmet_band_icon, "helmet_band", color, RESET_COLOR)
+		band_overlay.layer = FLOAT_LAYER +0.015
+		helmet_overlays += band_overlay
+
 	if(active_visor)
 		var/image/visor_overlay = overlay_image(active_visor.helmet_overlay_icon, active_visor.helmet_overlay, color, RESET_COLOR)
-		visor_overlay.layer = FLOAT_LAYER + 0.07 //render above everything so we can see stinky marines with medhuds on
+		visor_overlay.layer = FLOAT_LAYER + 0.07 //show which stinky marines are using medhuds above everything else
 		helmet_overlays += visor_overlay
+
+	if(length(helmet_overlays) > 1)
+		sort_helmet_overlays(helmet_overlays)
+
+	overlays.Cut()
+	for(var/image/helmet_image in helmet_overlays)
+		overlays += helmet_image
+
 	if(ismob(loc))
 		var/mob/living/wearer = loc
 		wearer.update_inv_head()
@@ -487,6 +567,7 @@
 			if(image_A.layer > image_B.layer)
 				list_to_sort.Swap(outer_index, inner_index)
 
+//===================== LIFE AND EQUIP AUDIT==================//
 /obj/item/clothing/head/helmet/marine/equipped(mob/living/carbon/human/mob, slot)
 	if(camera)
 		camera.c_tag = mob.name
@@ -535,6 +616,7 @@
 		return pockets
 	return ..()
 
+//====================== VISOR SUBSYSTEM ====================//
 /// Recalculates and sets the proper visor effects
 /obj/item/clothing/head/helmet/marine/proc/recalculate_visors(mob/user)
 	turn_off_visors(user)
@@ -622,13 +704,14 @@
 	to_chat(user, SPAN_WARNING("There are no visors to swap to currently."))
 	return FALSE
 
-
+//=======================AUDIO/RADIO==================//
 /obj/item/clothing/head/helmet/marine/hear_talk(mob/living/sourcemob, message, verb, datum/language/language, italics)
 	SEND_SIGNAL(src, COMSIG_BROADCAST_HEAR_TALK, sourcemob, message, verb, language, italics, loc == sourcemob)
 
 /obj/item/clothing/head/helmet/marine/see_emote(mob/living/sourcemob, emote, audible)
 	SEND_SIGNAL(src, COMSIG_BROADCAST_SEE_EMOTE, sourcemob, emote, audible, loc == sourcemob && audible)
 
+//==========HUD ACTION BUTTONS================//
 /datum/action/item_action/cycle_helmet_huds
 	var/supported_custom_icons = list(
 		"hud_marine",

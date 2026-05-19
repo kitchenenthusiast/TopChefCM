@@ -1,3 +1,9 @@
+// ======================================================
+// ORPHANED SYSTEM sorry geeves :(
+// Armor linking system - NOT USED IN CURRENT GAMEPLAY
+// Superseded by CM-style limb coverage armor resolution
+// ======================================================
+
 /**
  * Allows a piece of clothing to have their armor values change based on the values of another piece of clothing
  * Ex: Marine boots have their armor values change based on what type of armor you're wearing on your chest
