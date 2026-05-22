@@ -346,17 +346,20 @@
 	return ..() || istype(accessory_item, /obj/item/clothing/head/headband)
 
 /obj/item/clothing/head/helmet/marine/attackby(obj/item/attacking_item, mob/user)
+	if(..())
+		return TRUE
 	if(handle_visor(attacking_item, user))
 		return TRUE
 	if(handle_ammo_bash(attacking_item, user))
 		return TRUE
 	if(handle_tool(attacking_item, user))
 		return TRUE
-	if(handle_accessory(attacking_item, user))
-		return TRUE
+	if(is_valid_accessory(attacking_item))
+		if(handle_accessory(attacking_item, user))
+			return TRUE
 	if(handle_storage(attacking_item, user))
 		return TRUE
-	return ..()
+	return FALSE
 //==============================================//
 //          INTERNAL HANDLING SUBPROCS          //
 //==============================================//
@@ -442,12 +445,8 @@
 /obj/item/clothing/head/helmet/marine/proc/handle_accessory(obj/item/attacking_item, mob/user)
 	if(!is_valid_accessory(attacking_item))
 		return FALSE
-	var/is_helmet_garb = is_type_in_list (attacking_item, GLOB.allowed_helmet_items)
-	if(!is_helmet_garb)
-		return FALSE
-	if(length(src.accessories || list()) >= src.worn_accessory_limit)
-		to_chat(user, SPAN_NOTICE("[src] has no free accessory slots."))
-		return TRUE
+	if(src.accessories && (src.accessories.len >= src.worn_accessory_limit))
+		return handle_storage(attacking_item, user)
 	if(!safe_equip_mob(attacking_item, user, src))
 		return TRUE
 	LAZYINITLIST(src.accessories)
@@ -460,12 +459,15 @@
 
 //storage handling
 /obj/item/clothing/head/helmet/marine/proc/handle_storage(obj/item/attacking_item, mob/user)
-	var/is_helmet_garb = is_type_in_list(attacking_item, GLOB.allowed_helmet_items)
+	var/is_helmet_garb = FALSEfor(v/typepath in GLOB.allowed_helmet_items)
+		if(istype(attacking_item, typepath))
+			is_helmet_garb = TRUE
+			break
 	if(!is_helmet_garb)
 		return FALSE
 	if(pockets)
 		if(!safe_move_to_storage(attacking_item, user, pockets))
-			return TRUE
+			return FALSE
 		on_pocket_insertion(attacking_item)
 		to_chat(user, SPAN_NOTICE("You tuck the [attacking_item] into \the [src]."))
 		return TRUE
@@ -518,6 +520,14 @@
 
 	var/has_helmet_band = FALSE
 	for(var/obj/item/garb_object in all_gear)
+		if(!HAS_FLAG(garb_object.flags_obj, OBJ_NO_HELMET_BAND))
+			has_helmet_band = TRUE
+			break
+	if(has_helmet_band)
+		var/image/band_overlay = overlay_image(helmet_band_icon, "helmet_band", color, RESET_COLOR)
+		band_overlay.layer = FLOAT_LAYER + 0.01
+		helmet_overlays += band_overlay
+	for(var/obj/item/garb_object in all_gear)
 		var/image/new_overlay = garb_object.get_garb_overlay()
 		if(new_overlay)
 			new_overlay = image(new_overlay)
@@ -533,14 +543,6 @@
 		new_overlay.layer = FLOAT_LAYER + assigned_layer
 		new_overlay.dir = src.dir
 		helmet_overlays += new_overlay
-
-		if(!HAS_FLAG(garb_object.flags_obj, OBJ_NO_HELMET_BAND))
-			has_helmet_band = TRUE
-
-	if(has_helmet_band)
-		var/image/band_overlay = overlay_image(helmet_band_icon, "helmet_band", color, RESET_COLOR)
-		band_overlay.layer = FLOAT_LAYER +0.015
-		helmet_overlays += band_overlay
 
 	if(active_visor)
 		var/image/visor_overlay = overlay_image(active_visor.helmet_overlay_icon, active_visor.helmet_overlay, color, RESET_COLOR)
